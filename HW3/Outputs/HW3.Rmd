@@ -1,0 +1,142 @@
+---
+title: 'MSDS 6303: Doing Data Science - HW3'
+author: "Brandon Croom"
+date: "May 22, 2019"
+output: 
+  html_document:
+  keep_md: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+#Question 1
+The code for the answers is as follows:  
+* Create a new directory: mkdir awesome-public-datasets   
+* Navigate to the directory: cd awesome-public-datasets    
+* Clone the repository: git clone https://github.com/caesar0301/awesome-public-datasets  
+
+#Question 2
+##Part a
+```{r}
+#read in the titanic file in the current working directory
+df = read.table("Titanic.csv",header=TRUE,sep=",")
+```
+##Part b
+```{r}
+#load the library plyr package
+library(plyr)
+#call the count function in the plyr package to get number of males and females in the data set and display the results
+count(df,"Sex")
+#call the count function again to get the output in a data frame for graphing
+counts = count(df,"Sex")
+#plot the frequency of females and males
+barplot(counts$freq,names.arg=counts$Sex,main="Frequency of Females vs. Males", xlab="Sex",ylab="Frequency")
+```
+
+#Part C
+```{r}
+#Use sapply to calculate means of the df value. Set na.rm=T to filter out the NAs in the data. 
+sapply(df[,c("Age","Fare","Survived")],mean,na.rm=T)
+```
+
+#Question 3
+```{r}
+#create custom sleep function
+sleepFunc = function(sleep_df) {
+  #pop off needed fields and calculate required values filting out an NA values
+  #get median of Age
+  medAge = median(sleep_df$Age,na.rm=T)
+  
+  #get the range (min,max) of Sleep Duration
+  rangeDurSleep = range(sleep_df$Duration,na.rm=T)
+  
+  #get the mean of the Rosenberg Self Esteem (RSES) scale
+  meanRSES = mean(sleep_df$RSES,na.rm=T)
+  
+  #get the standard deviation of the Rosenberg Self Esteem (RSES) scale
+  sdRSES = sd(sleep_df$RSES,na.rm=T)
+  
+  #build out the report dataframe performing a couple of additional data modifications:
+  # divide the RSES standard deviation by 5, per notes
+  # find the difference in the sleept duration to get a single value
+  report = data.frame(medAge,meanRSES,sdRSES/5,diff(rangeDurSleep))
+  
+  #set the column names of the dataframe
+  names(report)= c("MedianAge","SelfEsteem","SE_SD","DurationRange")
+  
+  #round the values of the data frame to 2 digits and return the result
+  round(report,2)
+}
+
+#load the sleep data file into a dataframe
+sleep_data = read.table("sleep_data_01.csv",header=TRUE,sep=",")
+
+#pass the dataframs into the created sleepFunc to get the results
+sleepFunc(sleep_data)
+```
+
+#Question 4
+```{r}
+#Load the fivethirtyeight library. Assume it's installed
+library(fivethirtyeight)
+
+#list data packages in the fivethirty eight data set to determine which dataset is the 22nd. NOTE: Code below is commented out to prevent a massive output
+#data(package="fivethirtyeight")
+
+#the 22nd data set is "college_recent_grads". Assign it to the variable df
+df = college_recent_grads
+
+#use the vignette function to get the URL for the dataset. NOTE: Code below is commented out to prevent a massive output
+#vignette("fivethirtyeight", package="fivethirtyeight")
+```
+The URL for the college_recent_grads data set is:
+http://fivethirtyeight.com/features/the-economic-guide-to-picking-a-college-major/
+
+```{r}
+#Display the dimensions and column names of the data frame 'df'
+str(df)
+```
+
+#Question 5
+##a
+```{r}
+#Write out the column names of the data frame 'df'
+names(df)
+
+#write out the count of columns
+ncol(df)
+```
+
+##b
+```{r}
+#load dplyr library. Assume it's installed
+library(dplyr)
+#take the 'df' dataframe group it by category and summarize by category count
+#put the output in the major_count dataframe
+major_count = df %>% group_by(df$major_category) %>% summarize(count=n())
+#sort the major_count data frame ascending based on count value. NOTE:
+#ascending order is used due to the way barplots will place the data
+major_count = major_count[order(major_count$count),]
+```
+
+##c
+```{r}
+#input code per homework to make text perpendicular to axis
+par(las=2)
+#increase the y-axis margin to assist with display
+par(mar=c(5,8,4,2))
+
+#create a barplot of the major_count dataframe in horizontal format. color the barplot red and make it horizontal
+barplot(major_count$count,main="Barplot of Majors by Count", sub="fivethirtyeight college_recent_grads dataset", xlab="Major Count", horiz=T,names.arg=major_count$`df$major_category`,cex.names=0.5,col=c("red"))
+```
+
+##d
+```{r}
+#write out the data frame 'df' containing the college graduate data with no row numbers. NOTE: file will write out to current working directory
+write.table(df,"538-CollegeGradData.csv",sep=",",row.names=F)
+```
+
+#Question 6
+Github link for codebook:
+https://github.com/jbcroom/DS6306HomeworkRepo.git

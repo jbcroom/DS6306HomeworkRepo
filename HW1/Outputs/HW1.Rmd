@@ -1,0 +1,150 @@
+---
+title: "DS6306-HW1"
+author: "Brandon Croom"
+date: "May 7, 2019"
+output:
+  word_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+## Question 1
+a. The log of a positive number
+```{r}
+log(20)
+```
+
+b. What is the default base for the log function? Calculate the log of your previous number with a different base
+The default base for the log function is base 10.
+Calculating the log for 20 in base 2 is as follows:
+```{r}
+log(20,base=2)
+```
+
+c. The log of a negative number (explain the answer)
+```{r}
+log(-20)
+```
+
+The result produces a NaN value. This indicates that the results from taking a negative log are invalid in R
+
+d. The square-root of a positive number
+```{r}
+sqrt(20)
+```
+
+***
+
+##Question 2 - Random number generation
+a. Create a vector of 15 standard normal random variables. Calculate its mean and SD (standard deviation)
+```{r}
+#Define the random_normal vector with 15 values with default mean and sd
+random_normal = rnorm(15)
+
+#show output of random_normal vector
+random_normal
+
+#Calculate the mean of random_normal vector
+mean(random_normal)
+
+#Calculate the standard deviation of random_normal vector
+sd(random_normal)
+```
+
+b. Change the mean to 10 and the SD to 2 and recalculate the vector of 15 random normal variables. Calculate its mean and standard distribution
+```{r}
+#Define the random_normal vector with 15 values with mean = 10 and sd = 2
+random_normal = rnorm(15, mean=10, sd=2)
+
+#show output of random_normal vector
+random_normal
+
+#Calculate the mean of random_normal vector
+mean(random_normal)
+
+#Calculate the standard deviation of random_normal vector
+sd(random_normal)
+```
+
+c. Why are the means and SD not exactly the same as the means and SDs specified in the function?
+The means and SD are not exactly the same as the means specified due to requesting random variables in the vector. The random number generation may not be able to get the exact value but will get close
+
+***
+
+##Question 3 - Vector Operations
+a. The weights of 6 individuals in k6 are 60, 72, 57, 90, 95, 72
+b. The heights (in m) are 1.80, 1.85, 1.72, 1.90, 1.74, 1.91
+c. Enter these vectors into R
+```{r}
+#Create vectors called weight and height respectively to house the data in a and b above
+weight = c(60, 72, 57, 90, 95, 72)
+
+height = c(1.80, 1.85, 1.72, 1.90, 1.74, 1.91)
+
+#Output weight and height vectors to verify output
+weight
+height
+```
+
+d. Create a scatterplot of weight vs. height. Interpret the scatterplot
+```{r}
+plot(weight,height, main="Weight vs Height Scatterplot", xlab="Weight (kg)", ylab="Height (m)")
+```
+The scatterplot shows in general, that higher weights translate to taller individuals
+
+e. Calculate the BMI for each individual. (BMI = weight in kg divided by square of the height in m)
+```{r}
+#define vector BMI to hold BMI values
+BMI = weight / (height ^ 2)
+
+#Output BMI calculation
+BMI
+```
+
+f. Calculate the mean for weight
+```{r}
+#create a variable to hold the mean of the weight
+weight_mean = mean(weight)
+
+#Display the mean of the weight vector
+weight_mean
+```
+
+g. Subtract the mean from each value of weight
+```{r}
+#define a variable to hold calculation
+weight_sub_mean = weight - weight_mean
+
+#display the weight_sub_mean variable
+weight_sub_mean
+```
+
+h. Sum the result.
+```{r}
+sum(weight_sub_mean)
+```
+
+***
+
+##Question 4 - Data Science Profile
+```{r}
+#Build out data frame called Brandon and store personal ranking for the data science profile
+#Abbreviations for data science skills:
+# Computer Programming = CompProg
+# Math = Math
+# Statistics = Stats
+# Machine Learning = ML
+# Domain Expetise = DomainExp
+# Communications and Presentation Skills = CommPres
+# Data Visualization = DataViz
+
+Brandon = data.frame(
+  ds_category = c("CompProg", "Math", "Stats", "ML", "DomainExp", "CommPres", "DataViz"),
+  ds_rank = c(3,3,3,2,4,4,2)
+)
+
+#Display the results of Brandon in a bar graph
+ barplot(Brandon$ds_rank,main="Data Science Profile - Brandon Croom",names.arg=Brandon$ds_category, cex.names=0.5, space = 1)
+```

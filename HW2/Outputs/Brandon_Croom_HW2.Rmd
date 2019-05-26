@@ -1,0 +1,83 @@
+---
+title: 'MSDS 6303: Doing Data Science - HW2'
+author: "Brandon Croom"
+date: "May 16, 2019"
+output: 
+  html_document:
+  keep_md: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+#Question 1
+
+##**What is a basic workflow for reproducible research?**
+### The basic workflow for reproducible research involves the following steps:
+###  - Data Gathering
+###  - Data Analysis
+###  - Presentation of Results
+
+##**What are five practical tips for making research reproducible?**
+### To make research reproducible the following tips are useful:
+###  - Document everything
+###  - Make everything a text file
+###  - Explicitly tie files together
+###  - All files should be human readable
+###  - Have a plan to organize, store and make files available
+
+##**Give an example of how you might implement each tip**
+###  - **Document everything** - Example: Adding comments to code to explain what the code does and decisions on why the code was developed the way it was
+###  - **Make everything a text file** - Example: Save data in .CSV or .TXT files to ensure the files are not stored in a proprietary format that cannot be read at a later date due to incompatibility
+###  - **Explicitly tie files together** - Example: Have a header section in code that lists the files the code may work on or have a file mapping document that shows how files are related and describe data that is contained in them. 
+###  - **All files should be human readable** - Example: Ensure files are saved in non-proprietary and non-binary formats
+###  - **Have a plan to organize, store and make files available** - Example: build out a project folder to store all files and then sub-divide data, code, and analysis into individual directories under the main directory. For storage, leverage a version control system (e.g. Git) or cloud storage system (e.g Dropbox) to allow for maintaining all versions and reducing data loss. 
+
+##**Which of of these do you think will be the most difficult?**
+### The most difficult tip is the "document everything" tip. As humans, we want to quickly get to an answer and sometimes view documentation as overhead or something that slows down progress. Without having a documentation process ingrained in the experiment/analysis we may become unable to remember the "why's" around certain approaches or decisions at a later date, thus resulting in either missing or incomplete documentation (which makes reproducibility difficult). This item also underpins all of the other tips and if ingrained in the process allows for all of the items necessary for reproducible research to be easily carried out.
+
+***
+
+#Question 2
+##2a
+```{r}
+#Assignment 2, Q2A: Complete the following code to yield a scatterplot with x as Month and y as Temp
+# You're going to customize your plot slightly.  Use the help function to assist you if needed.
+# Make the x label "Month" and the y label "Temperature"
+# Finally, make the title of the plot "Temperature by Month" 
+plot(x=airquality$Month, y=airquality$Temp,xlab="Month",ylab="Temperature",main="Temperature by Month")
+```
+
+##2b
+```{r}
+#Assignment 2, Q2B: Build a scatter plot with x as Temperature and y as Ozone 
+# Complete the following code:
+# Make the x label "Temperature" and the y label "Ozone",
+# Make the title of the plot "Temperature vs Ozone"
+plot(x=airquality$Temp,y=airquality$Ozone,xlab="Temperature",ylab="Ozone",main="Ozone vs Temperature")
+```
+
+***
+
+#Question 3
+##3a
+<!--
+Assignment 2: 3A, complete the following scatter plot. 
+The x axis is temperature, while the y axis is pressure
+Please title the graph "Temperature vs Pressure"
+-->
+```{r pressure_plot, echo=FALSE}
+plot(x=pressure$temp,y=pressure$pressure,xlab="Temperature",ylab="Pressure",main="Temperature vs Pressure")
+```
+
+##3b
+<!--
+Assignment 2: 3B, complete the following scatter plot:
+x axis is pressure, y axis is temperature,
+Label the x axis as "Pressure" and the y axis as "Temperature", 
+Title the graph as "Pressure vs Temperature"
+-->
+
+```{r pressure_plot2, echo=FALSE}
+plot(x=pressure$pressure,y=pressure$temp,xlab="Pressure",ylab="Temperature",main="Pressure vs Temperature")
+```
