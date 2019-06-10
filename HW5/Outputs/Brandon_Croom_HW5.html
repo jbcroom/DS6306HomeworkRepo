@@ -199,7 +199,7 @@ $(document).ready(function () {
 <div id="question-1" class="section level1">
 <h1>Question 1</h1>
 <pre class="r"><code>#Set variable for the file yob2016.txt
-dataFile = &quot;C:\\Users\\croomb\\OneDrive - BAT\\Desktop\\Personal Training\\SMU\\DS 6306 - Doing Data Science\\Homework\\HW5\\HW5_2_2_2\\yob2016.txt&quot;
+dataFile = &quot;C:\\Users\\croomb\\OneDrive - BAT\\Desktop\\Personal Training\\SMU\\DS 6306 - Doing Data Science\\Homework\\HW5\\HW5_Files\\yob2016.txt&quot;
 
 #read into dataframe (df) the data from the file. 
 df = read.table(dataFile,header=FALSE,sep=&quot;;&quot;,stringsAsFactors = FALSE)
@@ -222,7 +222,7 @@ y2016 = df[-grep(&quot;yyy|YYY$&quot;,df$FirstName,value=FALSE),]</code></pre>
 <div id="question-2" class="section level1">
 <h1>Question 2</h1>
 <pre class="r"><code>#Set variable for the file yob2016.txt
-dataFile = &quot;C:\\Users\\croomb\\OneDrive - BAT\\Desktop\\Personal Training\\SMU\\DS 6306 - Doing Data Science\\Homework\\HW5\\HW5_2_2_2\\yob2015.txt&quot;
+dataFile = &quot;C:\\Users\\croomb\\OneDrive - BAT\\Desktop\\Personal Training\\SMU\\DS 6306 - Doing Data Science\\Homework\\HW5\\HW5_Files\\yob2015.txt&quot;
 
 #read into dataframe (df) the data from the file. 
 y2015 = read.table(dataFile,header=FALSE,sep=&quot;,&quot;,stringsAsFactors = FALSE)
@@ -304,7 +304,7 @@ write.csv(GirlsOnlyDFOutput,&quot;GirlsNamesTotal.csv&quot;,row.names=FALSE)</co
 </div>
 <div id="question-4" class="section level1">
 <h1>Question 4</h1>
-<p>GitHub Location:</p>
+<p>GitHub Location: <a href="https://github.com/jbcroom/DS6306HomeworkRepo/tree/master/HW5" class="uri">https://github.com/jbcroom/DS6306HomeworkRepo/tree/master/HW5</a></p>
 </div>
 
 
