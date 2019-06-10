@@ -17,5 +17,9 @@ At current the structures are as follows:
 
 - HW2 - contains the homework 2 requirements and outputs
 
-- HW3 - contains the homework 3 requiremetns and outputs. NOTE: This homework leveraged the fivethirtyeight R packages and datasets
+- HW3 - contains the homework 3 requirements and outputs. NOTE: This homework leveraged the fivethirtyeight R packages and datasets
+
+- HW4 - contains the homework 4 requirements and outputs.
+
+- HW5 - contains the homework 5 requirements and outputs.
 
