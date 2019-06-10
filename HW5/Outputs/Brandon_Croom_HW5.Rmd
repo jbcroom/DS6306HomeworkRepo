@@ -1,0 +1,88 @@
+---
+title: "DS6306 - HW5"
+author: "Brandon Croom"
+date: "June 8, 2019"
+output: 
+  html_document:
+  keep_md: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+#Question 1
+``` {r}
+#Set variable for the file yob2016.txt
+dataFile = "C:\\Users\\croomb\\OneDrive - BAT\\Desktop\\Personal Training\\SMU\\DS 6306 - Doing Data Science\\Homework\\HW5\\HW5_2_2_2\\yob2016.txt"
+
+#read into dataframe (df) the data from the file. 
+df = read.table(dataFile,header=FALSE,sep=";",stringsAsFactors = FALSE)
+
+#Give the dataframe headers that are readable
+names(df) = c("FirstName","Gender","AmountOfChildren_2016")
+
+#display the structure and summary of the dataframe(df)
+str(df)
+
+#find and display the misspelt name. It contains three y's at the end
+grep("yyy|YYY$",df$FirstName,value=TRUE)
+
+#Remove misspelled observation and save as y2016
+y2016 = df[-grep("yyy|YYY$",df$FirstName,value=FALSE),]
+```
+
+#Question 2
+```{r}
+#Set variable for the file yob2016.txt
+dataFile = "C:\\Users\\croomb\\OneDrive - BAT\\Desktop\\Personal Training\\SMU\\DS 6306 - Doing Data Science\\Homework\\HW5\\HW5_2_2_2\\yob2015.txt"
+
+#read into dataframe (df) the data from the file. 
+y2015 = read.table(dataFile,header=FALSE,sep=",",stringsAsFactors = FALSE)
+
+#Give the dataframe headers that are readable
+names(y2015) = c("FirstName","Gender","AmountOfChildren_2015")
+
+tail(y2015,10)
+```
+###In looking at the data we see that the last ten records are all male names. Additionally the amount of children given that name in 2015 is the exact same (5)
+
+```{r}
+#merge y2016 and y2015 data frames and create a new frame called final. Only compbine where there is data for names in both the 2016 and 2015 file. 
+final = merge(x=y2016,y=y2015)
+
+#verify no NAs in the data post merge
+apply(is.na(final),2,which)
+```
+#Question 3
+```{r}
+#Create a total column summing the 2015 and 2016 numbers
+final$total = final$AmountOfChildren_2016 + final$AmountOfChildren_2015
+
+#Sum the new total column to get the total number of people given popular names
+sum(final$total)
+
+#sort the dataframe by total column. Sort descending to get the top names at the top of the list
+final = final[order(-final$total),]
+
+#list out the top 10 items
+head(final,10)
+
+#Filter the list to only girls. Place it in a new dataframe to ensure we don't messup the final data frame
+GirlsOnlyDF = subset(final,Gender=="F",select=names(final))
+
+#display the top 10 popular girls names
+head(GirlsOnlyDF,10)
+
+#Write out the top 10 girls names and totals in CSV. Only write out the top 10 names and totals
+#grab the first 10 records. Create a new dataframe for data safe keeping
+GirlsOnlyDFOutput = head(GirlsOnlyDF,10)
+
+#strip off the wanted columns
+GirlsOnlyDFOutput = GirlsOnlyDFOutput[-c(2:4)]
+
+#write the file out. File will be written into current working directory
+write.csv(GirlsOnlyDFOutput,"GirlsNamesTotal.csv",row.names=FALSE)
+```
+#Question 4
+GitHub Location: 
+

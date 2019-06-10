@@ -1,0 +1,93 @@
+---
+title: "DS6306 - HW 4"
+author: "Brandon Croom"
+date: "May 30, 2019"
+output: 
+  html_document:
+  keep_md: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r}
+#Load libraries to assist in HTML scraping and do cleanup. Pre-load the necessary librarys prior to question code for clarity.NOTE The bitops library is requred by RCurl.
+library(XML)
+library(bitops)
+library(RCurl)
+library(tidyr)
+```
+
+#Question 1
+```{r}
+#Load the IMBD Harry Potter webpage (http://www.imdb.com/title/tt1201607/fullcredits?ref_=tt_ql_1)
+theUrl = "https://www.imdb.com/title/tt1201607/fullcredits?ref_=tt_ql_1&_sm_nck=1"
+URLResult = getURL(theUrl,.opts = list(ssl.verifypeer = FALSE) )
+
+#read the HTML Tables from the webpage
+AllHTMLTables = readHTMLTable(URLResult)
+
+#Based on the HTML page design the Actor listing is the third table in the page. Extract out the list of actors and remove columns not needed. NOTE: This will also remove the "Rest of cast listed alphabetically" marker as it is in column 1
+Actor_Listing = AllHTMLTables[[3]][,c(2,4)]
+
+#Add variable names to the data frame
+names(Actor_Listing) = c("Actor","Character")
+
+#coalesce the Actor column to characters since it comes in as a factor
+Actor_Listing$Actor = as.character(Actor_Listing$Actor)
+
+#Remove observations with NA
+Actor_Listing = na.omit(Actor_Listing)
+
+#Replace the multiple spaces with a single space. NOTE: This will also collapse the Warwick Davis character names to "Griphook / Professor Filius Flitwick"
+Actor_Listing$Character = gsub("\\s+"," ",Actor_Listing$Character)
+
+#Split the Actor name into First Name and Surname columns. Find the last space in the Actor string value and split the Actor string
+Actor_Listing = extract(Actor_Listing,Actor, into=c("FirstName","Surname"),"(.*)\\s+(\\S+)$")
+
+#List out the first 10 rows
+head(Actor_Listing,10)
+```
+
+***
+
+#Question 2
+```{r}
+#Load the ESPN San Antonio Spurs webpage (http://www.espn.com/nba/team/stats/_/name/sa/san-antonio-spurs)
+theURL = "http://www.espn.com/nba/team/stats/_/name/sa/san-antonio-spurs"
+UrlResult = getURL(theURL,.opts = list(ssl.verifypeer = FALSE) )
+
+#read the HTML Tables from the webpage
+HTMLTable = readHTMLTable(UrlResult)
+
+#Data analysis shows the sixth table is the player listing. Create a players data frame to store that data
+PlayersDF = data.frame(HTMLTable[6])
+
+#Split the players name and position into two distinct fields in the data frame
+PlayersDF = extract(PlayersDF,Name, into=c("PlayerName","Position"),"(.*)\\s+(\\S+)$")
+
+#Data analysis shows the eight table is the shooting statitics table. Create a shooting statistics data frame to store that data
+ShootingStats = data.frame(HTMLTable[8])
+
+#Combined the Field Goal percentage field from the Shooting Stats data frame into the players data frame
+PlayersDF$FGPct = ShootingStats$ NULL.FG.
+
+#Remove the last row of the data frame which is the totals row
+PlayersDF = PlayersDF[-nrow(PlayersDF),]
+
+#Field Goal percentage is a factor, convert to numeric for graphic purposes
+PlayersDF$FGPct = as.numeric(paste(PlayersDF$FGPct))
+
+#Set margins for the plot so things look nice
+par(las=2)
+par(mar=c(5,8,4,2))
+
+#Build out the plot with the following parameters/conditions:
+# - Set the x-axis limit to 100. NOTE: This helps prevent the legend from overlaying data until a player has 100% FG%
+# - Make the barplot a horizontal plot for clarity
+# - Since this is a horizontal bar plot, the Players Names will in effect be the labels for the y-axis.
+# - Color code the bars based on player position. 
+barplot(PlayersDF$FGPct, main="San Antonio Spurs Field Goal Percentage", ylab="",xlab="Field Goal Percentage",xlim=c(0,100),names.arg=c(PlayersDF$PlayerName),horiz=TRUE,cex.names=0.8,axis.lty=1,col=ifelse(PlayersDF$Position=='SG',"red",ifelse(PlayersDF$Position=="C","yellow",ifelse(PlayersDF$Position=="PG","blue",ifelse(PlayersDF$Position=="SF","orange",ifelse(PlayersDF$Position=="PF","green","gray"))))))
+
+#Add a legend to the plot to show the colors that denote player position
+legend("bottomright",legend=c("Shooting Guard","Center","Point Guard","Small Forward","Power Forward"),col=c("red","yellow","blue","orange","green"), pch=20)
