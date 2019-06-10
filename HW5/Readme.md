@@ -1,6 +1,6 @@
 This is the specific readme file for HW5. This homework leverages the following information:
 
-Input files:
+Input files (located in the HW5_Files folder):
 - yob2015.txt - this is a file of popular childrens names in 2015. 
 - yob2016.txt - this is a file of popular childrens names in 2016.
 - The file contains the name, sex associated with the name, and the number of times the name was used
@@ -16,4 +16,4 @@ When the RMarkdown file is executed all of the requirements for the homework wil
 - cleaning data sets
 - displaying various columns in data sets
 - merging datasets
-- outputing files for the datasets. NOTE: The default is to place the files in the current working directory
+- outputing files for the datasets. NOTE: The default is to place the files in the current working directory. A copy of these files in located in the Outputs folder for reference
