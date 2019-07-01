@@ -1,0 +1,123 @@
+---
+title: "DS6306 - HW6"
+author: "Brandon Croom"
+date: "June 13, 2019"
+output: 
+  html_document:
+  keep_md: True
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r}
+#Preinstall libraries used in this homework assignment
+#install.packages("tidyverse")
+library(ggplot2)
+library(dplyr)
+```
+#Question 1
+##Part A - Load R file from https://datafiles.samhsa.gov/study-dataset/nationalmental-health-services-survey-2015-n-mhss-2015-ds0001-nid17098
+```{r}
+#set filename variable
+fileName = "C:\\Users\\croomb\\OneDrive - BAT\\Desktop\\Personal Training\\SMU\\DS 6306 - Doing Data Science\\Homework\\HW6\\HW6_Files\\N-MHSS-2015-DS0001-bndl-data-r\\N-MHSS-2015-DS0001-data\\N-MHSS-2015-DS0001-data-r.rda"
+
+#load the compressed RDA file
+load(fileName)
+```
+
+##Part B
+```{r}
+#After loading the RDA file listed in Part A, the data is loaded into global memory as mh2015_puf. 
+#The state listing is in the LST table. Get a single list of all states into variable called stateList
+stateList = levels(mh2015_puf$LST)
+
+#after data analysis it looks like extra spaces are in the state abbreviations, clean those up
+stateList = strtrim(stateList,2)
+
+#output stateList vector
+stateList
+```
+
+##Part C
+```{r}
+#Filter the listing down to Veterans Affairs (VA) facilities on the mainland (including DC)
+#Start by filtering the mh2015_puf dataset by facility type
+searchStr = "Veterans Administration medical center (VAMC) or other VA health care facility"
+VAOnlyDF = subset(mh2015_puf,FACILITYTYPE == searchStr)
+
+#start building out a new dataframe of only data needed for analysis
+VACountsByState = data.frame(
+  VAState = as.character(VAOnlyDF$LST)
+)
+
+#Summarize the counts by state
+VACountsByState = VACountsByState %>% count(VAState,sort=TRUE)
+
+#Do some data cleanup. Update the summary counts and trim spaces from the state
+VACountsByState$VAState = strtrim(VACountsByState$VAState,2)
+names(VACountsByState) = c("VAState","Count")
+
+#remove non mainland values Alaska, Hawaii and US Territories
+VACountsByState = filter(VACountsByState, VAState != "AK" & VAState != "HI" & VAState != "GU" & VAState != "AS" & VAState != "VI" & VAState != "PR")
+```
+
+##Part D
+```{r, out.width="100%"}
+#Graph out the data. Apply the following manipulations:
+# - Order the data descending by count
+# - Remove the legend
+# - Add labels for x-axis, y-axis and title
+# - Flip the graph to make it more readable
+# - Center the header
+ggplot(data=VACountsByState, aes(x=reorder(VAState,Count), y=Count, fill=VAState)) + geom_bar(stat="identity", show.legend = FALSE) + labs(x ="State",y="VA Count",title="Number of VA Hospitals by State") + coord_flip() + theme(plot.title = element_text(hjust = 0.5)) 
+```
+
+#Question 2
+
+##Part A
+```{r}
+#Load in the statesize.csv file
+fileName="C:\\Users\\croomb\\OneDrive - BAT\\Desktop\\Personal Training\\SMU\\DS 6306 - Doing Data Science\\Homework\\HW6\\Outputs\\statesize.csv"
+stateSizeDF = read.csv(fileName,header=TRUE)
+
+#Use the past on the LST column from the dataframe in 1C. In this case since the issue of extra spaces in the state abbreviation was caught earlier in the data analysis we'll use the VAOnlyDF to provide the answer
+paste(VAOnlyDF$LST)
+```
+The issue coming from the SAMHSA dataset is that the state abbreviation has extra spaces at the end. This prevents the merge function from correctly merging this dataset with the state size data
+
+##Part B
+```{r}
+#The issue with the spaces was corrected in part 1C. Repeat here to meet the question requirement
+VACountsByState$VAState = strtrim(VACountsByState$VAState,2)
+
+#Merge the VACountsByState dataframe with eht 
+VAMergedDF = merge(x=stateSizeDF,y=VACountsByState,by.x="Abbrev",by.y="VAState")
+```
+
+##Part C
+```{r}
+#Create the a new calculated variable for VAs per 1000 square miles
+VAMergedDF$CountPerKMiles = VAMergedDF$Count / (VAMergedDF$SqMiles/1000)
+```
+
+##Part D
+```{r,out.width="100%"}
+#Graph out the data. Apply the following manipulations:
+# - Order the data descending by count
+# - Keep the legend
+# - Add labels for x-axis, y-axis and title
+# - Flip the graph to make it more readable
+# - Center the header
+# - Color the data by region without using default colors. In this case use the RColorBrewer palette
+ggplot(data=VAMergedDF, aes(x=reorder(Abbrev,CountPerKMiles), y=CountPerKMiles, fill=Region)) + geom_bar(stat="identity", show.legend = TRUE) + labs(x ="State",y="VA Count Per 1000 Miles",title="Number of VA Hospitals Per 1000 Miles") + coord_flip() + theme(plot.title = element_text(hjust = 0.5)) + scale_fill_brewer(palette="Dark2")
+```
+
+##Part E
+
+Reviewing the data indicates the following:  
+- By this metric smaller states, such as RI, show a higher number of VA hospitals per 1000 miles  
+- A higher number of VA hospitals in the Northeast region  
+- An extremely small number of VA hospitals in the West region 
+
+The recommendation for building new hospitals would be to look in the West region first. Building there could provide additional hospitals and begin to provide a greater level of care. 
