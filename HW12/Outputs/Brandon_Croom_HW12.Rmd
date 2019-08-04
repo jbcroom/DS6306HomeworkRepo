@@ -1,0 +1,142 @@
+---
+title: "DS6306 - HW12"
+author: "Brandon Croom"
+date: "August 2, 2019"
+output: 
+  html_document:
+  keep_md: True
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+#Preinstall libraries used in this homework assignment
+#install.packages("tidyverse")
+library(ggplot2)
+library(dplyr)
+```
+#Question 1
+###Part A
+```{r}
+#Per part A use the EuStockMarket internal R data for processing, specifically the DAX index. Do a quick structure of the data to get an understanding and load the help
+#help(EuStockMarkets)
+str(EuStockMarkets[,"DAX"])
+```
+
+###Part B
+```{r,fig.width=10}
+#Graph the data, making the line blue and plotting a vertical line in 1997
+plot(EuStockMarkets[,"DAX"],ylab="DAX Index Closing Price",main="DAX Index Closing Price by Year",col="blue")
+abline(v=1997, col="red")
+```
+
+###Part C
+```{r,fig.width=10}
+#Decompose the time series into it's component parts. Graph those component parts keeping the lines blue and vertical red line at 1997
+DAXComp <- decompose(EuStockMarkets[,"DAX"], type="mult")
+plot(DAXComp,col="blue")
+abline(v=1997, col="red")
+```
+
+#Question 2
+###Part A
+```{r}
+#Load the fpp2 data and look at the help
+#install.packages("fpp2")
+library(fpp2)
+#help(fpp2) - execute help on fpp2 data
+#help(maxtemp) - execute help on maxtemp data
+```
+
+###Part B
+```{r}
+#Subset the data as we only want information after 1990
+maxtemp90 = window(maxtemp,start=1990)
+```
+
+###Part C
+```{r,fig.width=10}
+#build out the model forecast using SES using the data from 1990 forward. Forecast out to 2021
+ses.sp = ses(maxtemp90)
+
+#plot the fit, the predicted model (in blue), and forecast
+plot(ses.sp, main="Temperature prediction from SES Model",xlim=c(1990,2021),xlab="Year",ylab="Temp (C)")
+lines(fitted(ses.sp),col="blue")
+
+#get the AIC, AICc, and BIC of the model
+ses.sp$model
+```
+
+###Part D
+```{r, fig.width=10}
+#Use a damped Holt's model on the data
+ses.holt = holt(maxtemp90,initial="optimal",damped=TRUE,h=6)
+
+#plot the model
+plot(ses.holt,xlim=c(1990,2021),main="Temperature prediction from Damped Holt's Model",xlab="Year",ylab="Temp (C)")
+lines(fitted(ses.holt),col="blue")
+
+#get the AIC, AICc, and BIC of the model
+ses.holt$model
+```
+
+###Part E
+Looking at the AICc values for each model we see that for the SES model the AICc is 141.5302 and the Holt AICc is 145.5865. Given that we want the model with the lowest AICc score, in this instance the SES model seems to be better than the Holt model.
+
+#Question 3
+###Part A
+```{r}
+#prep for the other answers to the questions by doing the following:
+# - loading the xts and dygraphs libraries
+# - loading the data files
+#install.packages("xts")
+#install.packages("dygraphs")
+library(xts)
+library(dygraphs)
+
+#set path for working directory
+filepath = "C:\\Users\\croomb\\OneDrive - BAT\\Desktop\\Personal Training\\SMU\\DS 6306 - Doing Data Science\\Homework\\HW12\\Outputs\\"
+setwd(filepath)
+
+#load the data files
+dfGrego = read.csv("Unit12TimeSeries_Gregorovitch.csv",stringsAsFactors = FALSE)
+dfOlive = read.csv("Unit12TimeSeries_Ollivander.csv",stringsAsFactors=FALSE)
+
+#Add headers to the dataframes
+names(dfGrego) = c("Date","Wands")
+names(dfOlive) = c("Date","Wands")
+```
+
+###Part B
+```{r}
+#Convert date fields from string types to data types
+dfGrego$Date = as.Date(dfGrego$Date,"%m/%d/%Y")
+dfOlive$Date = as.Date(dfOlive$Date,"%m/%d/%Y")
+```
+
+###Part C
+```{r}
+#Convert the dataframes to an xts object. Only bring in the Wands column and use the date column for ordering
+#This prevents the xts from converting the wand counts to character values which will impact the stacked graph
+xtsGrego = xts(dfGrego$Wands,order.by=dfGrego$Date)
+xtsOlive = xts(dfOlive$Wands,order.by=dfOlive$Date)
+```
+
+###Part D
+```{r,fig.width=10}
+#Bind the xts objects together
+xtsCombined = merge(xtsGrego,xtsOlive)
+
+#Update the combined object names, so we know who's who
+names(xtsCombined) = c("Gregorovitch","Ollivander")
+
+#Build out a dygraph
+#-Build out the graph
+#-Add title and axis labels
+#-Color the series values
+#-Stack the graph
+#-Add RangeSelector
+#-Add line highlighter
+#-Shade between 1995 and 1999 to show when "He Who Should Not Be Named" was around
+dygraph(xtsCombined,main="Wands Sold By Year") %>% dyAxis("y", label="Number of Wands") %>% dyAxis("x", label="Year") %>%dySeries("Gregorovitch", color="purple") %>% dySeries("Ollivander", color="red") %>% dyOptions(stackedGraph=TRUE) %>% dyRangeSelector(height=50) %>%  dyHighlight(highlightCircleSize = 5,highlightSeriesBackgroundAlpha = 0.2,hideOnMouseOut = TRUE) %>% dyShading(from="1995-01-01", to="1999-01-01", color="gray")
+```
